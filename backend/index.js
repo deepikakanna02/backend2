@@ -1,4 +1,4 @@
-const { parseSms } = require("./smsParser");
+const { parseSms } = require("./smsParser/smsParser");
 
 const sms =
   "ICICI Bank Acct XX623 debited for Rs 40.00 on 03-Apr-25; JUSTVEND PRIVAT credited. UPI:509307996753. Call 18002692 for dispute. SMS BLOCK 923 to 9275676766.";

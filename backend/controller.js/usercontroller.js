@@ -1,4 +1,5 @@
 const User = require('../models/user');
+const userController = require('../controllers/usercontroller');
 
 // @desc    Get current user profile
 // @route   GET /api/user/profile
@@ -15,7 +16,23 @@ const getUserProfile = async (req, res) => {
   }
 };
 
-module.exports = {
-  getUserProfile,
+// @desc    Add a transaction from SMS
+// @route   POST /api/user/sms
+// @access  Private
+const addTransactionFromSms = async (req, res) => {
+  try {
+    const { sms } = req.body;
+    const userId = req.user.id; // Get from auth middleware
+
+    const updatedUser = await User.addTransactionFromSms(userId, sms);
+    res.json({ success: true, user: updatedUser });
+  } catch (err) {
+    console.error('Error adding SMS transaction:', err);
+    res.status(400).json({ success: false, message: err.message });
+  }
 };
 
+module.exports = {
+  getUserProfile,
+  addTransactionFromSms,
+};

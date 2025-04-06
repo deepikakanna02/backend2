@@ -1,15 +1,15 @@
 {
   "name": "basic",
   "version": "1.0.0",
+  "description": "A Node.js project to extract SMS details such as bank name, transaction type, amount, and date, and perform full backend operations for a fintech app.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "test": "node server.js"
+    "test": "node tests/smsParser.test.js"
   },
-  "keywords": [],
+  "keywords": ["sms", "parser", "fintech", "transactions", "nodejs"],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "axios": "^1.8.4",
     "bcryptjs": "^3.0.2",
