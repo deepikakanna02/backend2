@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
-const authenticate = require('../middleware/verifytoken');
 const axios=require('axios');
+const { updateBudgetAndSavings } = require('../controllers/publiccontroller');
+const { updateBudgetFromLastTransaction } = require('../controllers/publiccontroller');
 
 const SPRING_BOOT_SIGNUP_URL = process.env.SPRING_BOOT_SIGNUP_URL; 
 const SPRING_BOOT_LOGIN_URL = process.env.SPRING_BOOT_LOGIN_URL;
@@ -65,14 +66,8 @@ router.post('/login', async (req, res) => {
   }
 });
 
-
-
-
-
-
-
-
-
+router.put('/update-budget-savings', updateBudgetAndSavings);
+router.post('/update-budget-from-last-txn', updateBudgetFromLastTransaction);
 
 
 module.exports = router;

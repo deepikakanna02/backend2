@@ -87,26 +87,37 @@ UserSchema.statics.addTransactionFromSms = async function (userId, sms) {
     throw new Error('Unable to parse SMS — format not recognized');
   }
 
-  // Build the transaction object
   const txn = {
     bankName: details.bankName,
-    type: details.transactionType,           // "credited" or "debited"
+    type: details.transactionType,
     amount: details.amount,
-    dateCreated: new Date(details.date),     // parse "03-Apr-25"
+    dateCreated: new Date(details.date),
     category: details.transactionType === 'credited' ? 'income' : 'expense',
   };
 
-  // Push the transaction into the user's transactions array
-  const updated = await this.findByIdAndUpdate(
-    userId,
-    { $push: { transactions: txn } },
-    { new: true, runValidators: true }
-  );
-
-  if (!updated) {
+  // Step 1: Fetch the user
+  const user = await this.findById(userId);
+  if (!user) {
     throw new Error('User not found');
   }
-  return updated;
+
+  // Step 2: Subtract amount from budget if it's debited
+  if (details.transactionType === 'debited') {
+    const currentBudget = parseFloat(user.budget) || 0;
+    const newBudget = currentBudget - txn.amount;
+
+    user.budget = newBudget.toFixed(2); // keep 2 decimal places
+  }
+
+  // Step 3: Save transaction (assuming separate Transaction model)
+  const Transaction = mongoose.model('transaction');
+  const newTransaction = await Transaction.create(txn);
+
+  // Step 4: Add transaction ref to user and save
+  user.transactions.push(newTransaction._id);
+  await user.save();
+
+  return user;
 };
 
 module.exports = mongoose.model('user', UserSchema);

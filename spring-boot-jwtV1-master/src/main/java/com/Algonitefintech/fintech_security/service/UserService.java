@@ -31,10 +31,10 @@ public class UserService {
         //     log.error("Validation failed: panCard is required.");
         //     return false;
         // }
-        if (user.getSavings().trim().isEmpty()) {
-            log.error("Validation failed: dmatAccount is required.");
-            return false;
-        }
+        // if (user.getSavings().trim().isEmpty()) {
+        //     log.error("Validation failed: dmatAccount is required.");
+        //     return false;
+        // }
         return true;
     }
 

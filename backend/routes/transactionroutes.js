@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { handleSmsTransaction } = require("../controller.js/transactioncontroller.js");
+const { handleSmsTransaction } = require("../controllers/transactioncontroller.js");
 const verifyToken = require("../middleware/verifytoken");
 
 // POST /api/transactions/from-sms

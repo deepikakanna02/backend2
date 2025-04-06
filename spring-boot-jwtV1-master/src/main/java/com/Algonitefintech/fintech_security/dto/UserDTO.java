@@ -23,7 +23,7 @@ public class UserDTO {
     
     private String budget;
 
-    @NotBlank
+    
     private String savings;
 
     

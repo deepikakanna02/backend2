@@ -83,7 +83,62 @@ async function createTransaction(req, res) {
   }
 }
 
+
+
+// @desc    Parse SMS and add transaction
+// @route   POST /api/transaction/from-sms
+// @access  Private
+const addTransactionFromSms = async (req, res) => {
+  const { sms } = req.body;
+  const userId = req.user.id; // JWT token already provides this
+
+  if (!sms) {
+    return res.status(400).json({ message: 'SMS text is required' });
+  }
+
+  try {
+    // 1. Parse SMS into transaction
+    const transaction = await extractTransactionFromSms(sms);
+    if (!transaction) {
+      return res.status(422).json({ message: 'Unable to parse SMS format' });
+    }
+
+    // 2. Save transaction
+    const savedTransaction = await transaction.save();
+
+    // 3. Attach transaction to user
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { $push: { transactions: savedTransaction._id } },
+      { new: true }
+    );
+
+    // 4. Subtract amount from budget
+    const amount = parseFloat(savedTransaction.amount);
+    const newBudget = parseFloat(user.budget || 0) - amount;
+    user.budget = newBudget.toFixed(2);
+    await user.save();
+
+    // 5. Send response
+    res.status(200).json({
+      message: 'Transaction added and budget updated successfully',
+      transaction: savedTransaction,
+      newBudget: user.budget
+    });
+
+  } catch (error) {
+    console.error('Error adding transaction from SMS:', error);
+    res.status(500).json({ message: 'Failed to process SMS' });
+  }
+};
+
+
+
+
+
 module.exports = {
+  addTransactionFromSms,
   handleSmsTransaction,
   createTransaction
 };
+
